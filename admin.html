@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="night">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>إنجاز — لوحة التحكم</title>
+<meta name="description" content="لوحة تحكم شخصية لمتابعة وقت الدراسة والاستراحة وإنجازات اليوم">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;500;700;800&family=Reem+Kufi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="aurora-bg"><div class="aurora-blob b1"></div><div class="aurora-blob b2"></div><div class="aurora-blob b3"></div></div>
+<div class="chalk-dust"></div>
+
+<div class="lock-overlay" id="lock-overlay" style="display:none">
+  <div class="lock-box">
+    <div class="brand-mark" style="margin:0 auto 16px"><span data-icon="lock"></span></div>
+    <h2>لوحة محمية</h2>
+    <p>أدخل رمز الدخول عشان تفتح لوحة التحكم</p>
+    <input type="password" class="form-input" id="lock-pin-input" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter') submitPinUnlock()">
+    <button type="button" class="btn btn-primary btn-block" onclick="submitPinUnlock()">دخول</button>
+  </div>
+</div>
+
+<div class="app-shell">
+
+  <header class="topbar reveal">
+    <div class="brand">
+      <div class="brand-mark"><span data-icon="book"></span></div>
+      <div class="brand-text">
+        <h1>إنجاز</h1>
+        <div class="role-tag"><span class="role-dot"></span><span>لوحة تحكم — <span id="brand-role-name">المذاكِر المجتهد</span></span></div>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <div class="date-pill">
+        <span id="today-date">—</span>
+        <span class="clock num" id="live-clock">--:--</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="review.html" class="btn-icon" title="المراجعات والامتحانات" aria-label="المراجعات والامتحانات"><span data-icon="target"></span></a>
+        <span class="sync-dot-mini off" id="sync-dot-mini" title="حالة المزامنة"></span>
+        <button type="button" class="btn-icon" onclick="openSettings()" title="الإعدادات" aria-label="الإعدادات"><span data-icon="settings"></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="period-toggle reveal">
+    <button type="button" class="period-btn active" data-period="day" onclick="setPeriod('day')">اليوم</button>
+    <button type="button" class="period-btn" data-period="week" onclick="setPeriod('week')">الأسبوع</button>
+    <button type="button" class="period-btn" data-period="month" onclick="setPeriod('month')">الشهر</button>
+  </div>
+
+  <section class="stats-grid reveal" style="animation-delay:.05s">
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon tint-primary" data-icon="book"></span></div>
+      <span class="stat-value num" id="stat-study">0 د</span>
+      <span class="stat-label">قراءة اليوم</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon tint-secondary" data-icon="coffee"></span></div>
+      <span class="stat-value num" id="stat-break">0 د</span>
+      <span class="stat-label">استراحة اليوم</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon tint-success" data-icon="bed"></span></div>
+      <span class="stat-value num" id="stat-sleep">0 د</span>
+      <span class="stat-label">نوم اليوم</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon tint-success" data-icon="chart"></span></div>
+      <span class="stat-value num" id="stat-percent">0%</span>
+      <span class="stat-label">إنجاز اليوم</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top"><span class="stat-icon tint-warning" data-icon="sparkle"></span></div>
+      <span class="stat-value num" id="stat-points">0</span>
+      <span class="stat-label">نقاط اليوم</span>
+    </div>
+  </section>
+
+  <section class="card timeline-card reveal" style="animation-delay:.1s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon" data-icon="clock"></span>
+        <div>
+          <div class="card-title">خط اليوم</div>
+          <div class="card-sub" id="timeline-sub">شكل يومك بلمحة وحدة — من 12 بالليل ل12 بالليل</div>
+        </div>
+      </div>
+      <div class="timeline-legend">
+        <span class="legend-item"><span class="legend-dot study"></span> قراءة</span>
+        <span class="legend-item"><span class="legend-dot brk"></span> استراحة</span>
+        <span class="legend-item"><span class="legend-dot sleep"></span> نوم</span>
+      </div>
+    </div>
+    <div class="timeline-track" id="timeline-track"></div>
+    <div class="week-bars" id="week-bars" style="display:none"></div>
+    <div class="month-grid-wrap" id="month-grid-wrap" style="display:none"></div>
+
+    <div class="progress-side" style="margin-top:18px">
+      <div class="progress-title-row">
+        <span class="card-sub" id="goal-label">هدف اليوم</span>
+      </div>
+      <div class="progress-bar-track" style="height:10px">
+        <div class="progress-bar-fill" id="goal-fill" style="background:linear-gradient(90deg, var(--secondary), var(--primary))"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tracker-grid">
+    <div class="card tracker-card reveal" data-cat="study" style="animation-delay:.15s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon" data-icon="book"></span>
+          <div>
+            <div class="card-title">دراستي</div>
+            <div class="card-sub tracker-total" id="total-study">0 د اليوم</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timer-box" id="timerbox-study">
+        <div class="timer-display num" id="timerdisplay-study">00:00:00</div>
+        <div class="timer-caption" id="timercaption-study">اضغط ابدأ وراح يحسب الوقت أوتوماتيكياً</div>
+        <div class="timer-controls" id="timercontrols-study"></div>
+      </div>
+
+      <button type="button" class="manual-toggle" id="manualtoggle-study" onclick="toggleManualForm('study')">
+        <span>إضافة يدوية</span><span data-icon="chevronDown"></span>
+      </button>
+      <form class="manual-form" id="manualform-study">
+        <div class="field"><label for="manualstart-study">من</label><input type="time" class="form-input" id="manualstart-study" required></div>
+        <div class="field"><label for="manualend-study">إلى</label><input type="time" class="form-input" id="manualend-study" required></div>
+        <button type="submit" class="btn btn-secondary" aria-label="إضافة"><span data-icon="plus"></span></button>
+      </form>
+
+      <ul class="session-list" id="sessionlist-study"></ul>
+    </div>
+
+    <div class="card tracker-card reveal" data-cat="break" style="animation-delay:.2s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon" data-icon="coffee"></span>
+          <div>
+            <div class="card-title">استراحاتي</div>
+            <div class="card-sub tracker-total" id="total-break">0 د اليوم</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timer-box" id="timerbox-break">
+        <div class="timer-display num" id="timerdisplay-break">00:00:00</div>
+        <div class="timer-caption" id="timercaption-break">اضغط ابدأ وراح يحسب الوقت أوتوماتيكياً</div>
+        <div class="timer-controls" id="timercontrols-break"></div>
+      </div>
+
+      <button type="button" class="manual-toggle" id="manualtoggle-break" onclick="toggleManualForm('break')">
+        <span>إضافة يدوية</span><span data-icon="chevronDown"></span>
+      </button>
+      <form class="manual-form" id="manualform-break">
+        <div class="field"><label for="manualstart-break">من</label><input type="time" class="form-input" id="manualstart-break" required></div>
+        <div class="field"><label for="manualend-break">إلى</label><input type="time" class="form-input" id="manualend-break" required></div>
+        <button type="submit" class="btn btn-secondary" aria-label="إضافة"><span data-icon="plus"></span></button>
+      </form>
+
+      <ul class="session-list" id="sessionlist-break"></ul>
+    </div>
+
+    <div class="card tracker-card reveal" data-cat="sleep" style="animation-delay:.25s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon" data-icon="bed"></span>
+          <div>
+            <div class="card-title">نومي</div>
+            <div class="card-sub tracker-total" id="total-sleep">0 د اليوم</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timer-box" id="timerbox-sleep">
+        <div class="timer-display num" id="timerdisplay-sleep">00:00:00</div>
+        <div class="timer-caption" id="timercaption-sleep">اضغط ابدأ وراح يحسب الوقت أوتوماتيكياً</div>
+        <div class="timer-controls" id="timercontrols-sleep"></div>
+      </div>
+
+      <button type="button" class="manual-toggle" id="manualtoggle-sleep" onclick="toggleManualForm('sleep')">
+        <span>إضافة يدوية</span><span data-icon="chevronDown"></span>
+      </button>
+      <form class="manual-form" id="manualform-sleep">
+        <div class="field"><label for="manualstart-sleep">من</label><input type="time" class="form-input" id="manualstart-sleep" required></div>
+        <div class="field"><label for="manualend-sleep">إلى</label><input type="time" class="form-input" id="manualend-sleep" required></div>
+        <button type="submit" class="btn btn-secondary" aria-label="إضافة"><span data-icon="plus"></span></button>
+      </form>
+
+      <ul class="session-list" id="sessionlist-sleep"></ul>
+    </div>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.25s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon" data-icon="trophy"></span>
+        <div>
+          <div class="card-title">إنجازات اليوم</div>
+          <div class="card-sub">سجّل أهدافك اليوم وتابع نسبة إنجازك ونقاطك</div>
+        </div>
+      </div>
+    </div>
+
+    <form class="achieve-input-row" id="achieve-form">
+      <input type="text" class="form-input" id="achieve-input" placeholder="شنو تريد تنجز اليوم؟" maxlength="140">
+      <button type="submit" class="btn btn-primary" aria-label="إضافة إنجاز"><span data-icon="plus"></span></button>
+    </form>
+
+    <ul class="achieve-list" id="achieve-list"></ul>
+
+    <div class="progress-wrap">
+      <div class="progress-side">
+        <div class="progress-title-row">
+          <span class="card-sub">نسبة الإنجاز</span>
+          <span class="progress-percent-num num" id="progress-percent-num">0%</span>
+        </div>
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+        <span class="progress-hint" id="progress-hint">ضيف أهدافك اليوم عشان نحسب النسبة</span>
+      </div>
+      <div class="points-orb">
+        <span class="val num" id="points-value">0</span>
+        <span class="lbl">نقطة</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="app-footer reveal" style="animation-delay:.3s">
+    <button type="button" class="btn btn-secondary btn-sm" onclick="copyViewerLink()"><span data-icon="link"></span><span>نسخ رابط المشاهدة</span></button>
+    <span>إنجاز — تابع دراستك وشارك تقدمك مع أهلك</span>
+    <span style="opacity:.5; font-size:.68rem;" class="num">نسخة الملفات: v1.5</span>
+  </footer>
+
+</div>
+
+<!-- لوحة تفاصيل الجلسة -->
+<div class="modal-overlay" id="modal-details" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="modal-title" id="modal-details-title">تفاصيل الجلسة</h3>
+      <button type="button" class="icon-btn" onclick="closeModal('modal-details')" aria-label="إغلاق"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta"><span data-icon="clock"></span><span>المدة: <b class="num" id="modal-details-duration">—</b></span></div>
+      <div class="form-group-row">
+        <div class="field"><label for="modal-details-start">من</label><input type="time" class="form-input" id="modal-details-start"></div>
+        <div class="field"><label for="modal-details-end">إلى</label><input type="time" class="form-input" id="modal-details-end"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="modal-details-notes">شسويت بهذا الوقت؟</label>
+        <textarea class="form-textarea" id="modal-details-notes" placeholder="مثلاً: قريت فصل الكسور بالرياضيات وحليت 10 مسائل..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-danger btn-sm" onclick="deleteSessionFromModal()"><span data-icon="trash"></span><span>حذف</span></button>
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-details')">إلغاء</button>
+      <button type="button" class="btn btn-primary" onclick="saveDetailsModal()"><span data-icon="check"></span><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- لوحة تفاصيل يوم كامل (من الأسبوع/الشهر) -->
+<div class="modal-overlay" id="modal-day" role="dialog" aria-modal="true">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h3 class="modal-title" id="modal-day-title">تفاصيل اليوم</h3>
+      <button type="button" class="icon-btn" onclick="closeDayModal()" aria-label="إغلاق"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body" id="modal-day-body"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" onclick="closeDayModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- لوحة الإعدادات -->
+<div class="modal-overlay" id="modal-settings" role="dialog" aria-modal="true">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h3 class="modal-title">الإعدادات</h3>
+      <button type="button" class="icon-btn" onclick="closeModal('modal-settings')" aria-label="إغلاق"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-tabs">
+        <button type="button" class="settings-tab" data-tab="appearance" onclick="switchSettingsTab('appearance')">المظهر</button>
+        <button type="button" class="settings-tab" data-tab="goals" onclick="switchSettingsTab('goals')">الأهداف والنقاط</button>
+        <button type="button" class="settings-tab" data-tab="sync" onclick="switchSettingsTab('sync')">المشاركة مع العائلة</button>
+        <button type="button" class="settings-tab" data-tab="advanced" onclick="switchSettingsTab('advanced')">متقدم</button>
+      </div>
+
+      <div class="settings-pane" id="pane-appearance">
+        <div class="theme-swatches">
+          <div class="theme-swatch" data-theme="night" onclick="selectTheme('night')">
+            <div class="swatch-preview"><span style="background:#0a0d18"></span><span style="background:#f0b860"></span><span style="background:#6f90f7"></span></div>
+            <span class="swatch-name">🌙 ليلي</span>
+            <span class="swatch-desc">مصباح دافئ بغرفة هادئة، مريح للسهرات</span>
+          </div>
+          <div class="theme-swatch" data-theme="study" onclick="selectTheme('study')">
+            <div class="swatch-preview"><span style="background:#1b2a20"></span><span style="background:#e8d375"></span><span style="background:#e8927a"></span></div>
+            <span class="swatch-name">🌿 أجواء دراسية</span>
+            <span class="swatch-desc">لوح طباشير — تركيز هادئ بروح الصف</span>
+          </div>
+          <div class="theme-swatch" data-theme="normal" onclick="selectTheme('normal')">
+            <div class="swatch-preview"><span style="background:#f6f7fb"></span><span style="background:#3d5af1"></span><span style="background:#ff8a4c"></span></div>
+            <span class="swatch-name">☀️ طبيعي</span>
+            <span class="swatch-desc">واضح وبسيط بضوء النهار</span>
+          </div>
+          <div class="theme-swatch" data-theme="custom" onclick="selectTheme('custom')">
+            <div class="swatch-preview"><span style="background:linear-gradient(135deg,#7c3aed,#ff8a4c)"></span></div>
+            <span class="swatch-name">🎨 بكيفك</span>
+            <span class="swatch-desc">اختار ألوانك الخاصة بالكامل</span>
+          </div>
+        </div>
+
+        <div class="form-group" id="custom-theme-box" style="display:none">
+          <div class="form-group-row">
+            <div class="form-group">
+              <label class="form-label">لون أساسي</label>
+              <div class="color-input-row"><input type="color" id="custom-primary" oninput="updateCustomColor('primary', this.value)"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">لون ثانوي</label>
+              <div class="color-input-row"><input type="color" id="custom-secondary" oninput="updateCustomColor('secondary', this.value)"></div>
+            </div>
+          </div>
+          <label class="form-label">القاعدة</label>
+          <div class="mode-toggle">
+            <button type="button" data-mode="light" onclick="setCustomMode('light')">فاتح</button>
+            <button type="button" data-mode="dark" onclick="setCustomMode('dark')">غامق</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-pane" id="pane-goals">
+        <div class="form-group">
+          <label class="form-label" for="input-student-name">اسمك (يظهر بالعنوان ولأهلك بلوحة المشاهدة)</label>
+          <input type="text" class="form-input" id="input-student-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="input-goal-hours">هدف القراءة اليومي (بالساعات)</label>
+          <input type="number" step="0.5" min="0.5" class="form-input" id="input-goal-hours">
+          <span class="form-hint">يُستعمل بشريط «هدف اليوم» وباحتفال الوصول للهدف</span>
+        </div>
+        <div class="form-group-row">
+          <div class="form-group">
+            <label class="form-label" for="input-points-min">نقاط لكل دقيقة قراءة</label>
+            <input type="number" step="0.5" min="0" class="form-input" id="input-points-min">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="input-points-achieve">نقاط لكل إنجاز مكتمل</label>
+            <input type="number" step="1" min="0" class="form-input" id="input-points-achieve">
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="saveGoalsSettings()"><span data-icon="check"></span><span>حفظ</span></button>
+      </div>
+
+      <div class="settings-pane" id="pane-sync">
+        <p class="form-hint">
+          عشان أهلك يشوفون تحديثاتك لحظياً عبر رابط لوحة المتابعة، الموقع يستخدم قاعدة بيانات مجانية من Google اسمها <b>Firebase</b>.
+          الإعداد يصير مرة وحدة بس بتعديل ملفي <code>admin.html</code> و<code>index.html</code> مباشرة (خطوات كاملة بالـ README المرفق).
+        </p>
+        <div class="sync-status-row"><span class="sync-dot off" id="sync-dot"></span><span id="sync-label">المزامنة غير مفعّلة</span></div>
+        <div class="form-hint gh-test-box err" id="sync-error-detail" style="display:none; align-items:center; gap:6px;"></div>
+
+        <div class="form-hint" id="gh-detect-notice" style="display:none; align-items:center; gap:6px;">
+          <span data-icon="info"></span><span>ما لكينا إعدادات Firebase بملف هذي الصفحة. لازم تعدّل سطر <code>window.INJAZ_FIREBASE_CONFIG</code> بآخر admin.html و index.html وترفعهم، وبعدين رجّع افتح هذي الصفحة. الشرح كامل بالـ README.</span>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" onclick="syncNow()"><span data-icon="refresh"></span><span>مزامنة الآن (نشر لهذا الجهاز)</span></button>
+          <button type="button" class="btn btn-secondary" onclick="loadFromCloudNow()"><span data-icon="download"></span><span>تحميل من السحابة</span></button>
+          <button type="button" class="btn btn-secondary" onclick="testFirebaseConnection()"><span data-icon="target"></span><span>فحص الاتصال</span></button>
+        </div>
+        <span class="form-hint" style="display:block; margin-bottom:10px;">فتحت لوحة التحكم بجهاز جديد وتريد بياناتك القديمة؟ اضغط «تحميل من السحابة».</span>
+        <div class="form-hint gh-test-box" id="gh-test-result" style="display:none; align-items:center; gap:6px;"></div>
+        <div class="form-group">
+          <label class="form-label">رابط لوحة المتابعة (شاركه مع أهلك)</label>
+          <div class="modal-meta" style="justify-content:space-between;">
+            <span id="viewer-link-text" class="num" style="word-break:break-all;">—</span>
+            <button type="button" class="icon-btn" onclick="copyViewerLink()" title="نسخ" aria-label="نسخ الرابط"><span data-icon="copy"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-pane" id="pane-advanced">
+        <div class="form-group">
+          <label class="form-label" for="input-admin-pin">رمز قفل الدخول (اختياري)</label>
+          <input type="text" inputmode="numeric" class="form-input" id="input-admin-pin" placeholder="اتركه فارغ لإلغاء القفل">
+          <span class="form-hint">قفل بسيط يمنع أي حد يفتح جهازك من الدخول للوحة مباشرة — تنبيه: مو تشفير حقيقي، بس رادع بسيط.</span>
+          <button type="button" class="btn btn-secondary btn-sm" style="align-self:flex-start" onclick="saveAdminPin()">حفظ القفل</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">نسخة احتياطية من بياناتك</label>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="exportData()"><span data-icon="download"></span><span>تصدير</span></button>
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+              <span data-icon="upload"></span><span>استيراد</span>
+              <input type="file" accept="application/json" style="display:none" onchange="importDataFile(this)">
+            </label>
+          </div>
+        </div>
+        <div class="danger-zone">
+          <div>
+            <div class="form-label" style="color:var(--danger)">تصفير كل البيانات</div>
+            <div class="form-hint">يمسح كل الجلسات والإنجازات نهائياً، بلا رجعة.</div>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" onclick="resetAllData()"><span data-icon="trash"></span><span>تصفير</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ⚙️ إعداد Firebase — لازم تعبّي هذا حتى تشتغل المشاركة مع العائلة (خطوات كاملة بالـ README).
+  // انسخ كود الإعداد (firebaseConfig) كامل من صفحة مشروعك بـ Firebase والصقه هنا بدل null:
+  window.INJAZ_FIREBASE_CONFIG = null;
+  /* مثال:
+  window.INJAZ_FIREBASE_CONFIG = {
+    apiKey: "AIzaSy...",
+    authDomain: "my-project.firebaseapp.com",
+    databaseURL: "https://my-project-default-rtdb.firebaseio.com",
+    projectId: "my-project",
+    storageBucket: "my-project.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef"
+  };
+  */
+</script>
+<script type="module" src="js/firebase-bridge.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

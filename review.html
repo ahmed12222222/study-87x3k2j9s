@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="night">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>إنجاز — المراجعات والامتحانات</title>
+<meta name="description" content="خطة مراجعة دورية للمواد والمواضيع، مع متابعة مواعيد الامتحانات">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;500;700;800&family=Reem+Kufi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="aurora-bg"><div class="aurora-blob b1"></div><div class="aurora-blob b2"></div><div class="aurora-blob b3"></div></div>
+<div class="chalk-dust"></div>
+
+<div class="app-shell">
+
+  <header class="topbar reveal">
+    <div class="brand">
+      <div class="brand-mark"><span data-icon="target"></span></div>
+      <div class="brand-text">
+        <h1>المراجعات والامتحانات</h1>
+        <div class="role-tag"><span class="role-dot"></span><span>خطة <span id="brand-role-name">المذاكِر المجتهد</span></span></div>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <div class="date-pill">
+        <span id="today-date">—</span>
+        <span class="clock num" id="live-clock">--:--</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="admin.html" class="btn-icon" title="رجوع للوحة التحكم" aria-label="رجوع للوحة التحكم"><span data-icon="book"></span></a>
+      </div>
+    </div>
+  </header>
+
+  <section class="card reveal" style="animation-delay:.05s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon tint-primary" data-icon="clock"></span>
+        <div>
+          <div class="card-title">مراجعات اليوم</div>
+          <div class="card-sub">أشّر عليها كل ما تراجع موضوع</div>
+        </div>
+      </div>
+    </div>
+    <ul class="achieve-list" id="today-reviews-list"></ul>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.1s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon tint-warning" data-icon="target"></span>
+        <div>
+          <div class="card-title">امتحانات اليوم</div>
+          <div class="card-sub">بالتوفيق! 💪</div>
+        </div>
+      </div>
+    </div>
+    <ul class="achieve-list" id="today-exams-list"></ul>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.15s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon tint-danger" data-icon="alertCircle"></span>
+        <div>
+          <div class="card-title">امتحانات قادمة</div>
+          <div class="card-sub">خلال 14 يوم الجاية</div>
+        </div>
+      </div>
+    </div>
+    <div id="upcoming-exams-list"></div>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.2s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon" data-icon="palette"></span>
+        <div>
+          <div class="card-title">المواد الدراسية</div>
+          <div class="card-sub">كل مادة تاخذ لون مميز تلقائياً</div>
+        </div>
+      </div>
+    </div>
+    <form class="achieve-input-row" id="subject-form">
+      <input type="text" class="form-input" id="subject-name-input" placeholder="اسم مادة جديدة، مثلاً: رياضيات" maxlength="30">
+      <button type="submit" class="btn btn-primary" aria-label="إضافة مادة"><span data-icon="plus"></span></button>
+    </form>
+    <div class="subjects-wrap" id="subjects-list"></div>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.25s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon" data-icon="plus"></span>
+        <div>
+          <div class="card-title">إضافة موضوع مراجعة</div>
+          <div class="card-sub">حدد جدول مراجعة يتكرر تلقائياً، وموعد الامتحان إذا موجود</div>
+        </div>
+      </div>
+    </div>
+
+    <form id="review-form">
+      <div class="form-group">
+        <label class="form-label" for="review-title-input">اسم الموضوع</label>
+        <input type="text" class="form-input" id="review-title-input" placeholder="مثلاً: الفصل الثالث - المعادلات" maxlength="80">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">المواد المرتبطة (اختياري، تكدر تختار أكثر من وحدة)</label>
+        <div class="subjects-picker-wrap" id="review-subjects-picker"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">جدول المراجعة</label>
+        <div class="schedule-type-row">
+          <button type="button" class="schedule-type-btn" data-type="daily" onclick="setScheduleType('daily')">يومياً</button>
+          <button type="button" class="schedule-type-btn" data-type="week" onclick="setScheduleType('week')">أيام محددة</button>
+          <button type="button" class="schedule-type-btn" data-type="every" onclick="setScheduleType('every')">كل عدد أيام</button>
+        </div>
+
+        <div class="schedule-sub" id="schedule-sub-daily">
+          <div class="field" style="max-width:180px">
+            <label for="review-times-per-day">كم مرة باليوم؟</label>
+            <input type="number" class="form-input" id="review-times-per-day" value="1" min="1" max="10">
+          </div>
+        </div>
+
+        <div class="schedule-sub" id="schedule-sub-week" style="display:none">
+          <div class="days-chip-row">
+            <button type="button" class="day-chip" data-day="0" onclick="toggleDayChip(this)">أحد</button>
+            <button type="button" class="day-chip" data-day="1" onclick="toggleDayChip(this)">اثنين</button>
+            <button type="button" class="day-chip" data-day="2" onclick="toggleDayChip(this)">ثلاثاء</button>
+            <button type="button" class="day-chip" data-day="3" onclick="toggleDayChip(this)">أربعاء</button>
+            <button type="button" class="day-chip" data-day="4" onclick="toggleDayChip(this)">خميس</button>
+            <button type="button" class="day-chip" data-day="5" onclick="toggleDayChip(this)">جمعة</button>
+            <button type="button" class="day-chip" data-day="6" onclick="toggleDayChip(this)">سبت</button>
+          </div>
+        </div>
+
+        <div class="schedule-sub" id="schedule-sub-every" style="display:none">
+          <div class="field" style="max-width:180px">
+            <label for="review-every-n">كل كم يوم؟</label>
+            <input type="number" class="form-input" id="review-every-n" value="3" min="1" max="60">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group-row">
+        <div class="form-group">
+          <label class="form-label" for="review-start-date">تبدأ من</label>
+          <input type="date" class="form-input" id="review-start-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="review-exam-date">موعد الامتحان (اختياري)</label>
+          <input type="date" class="form-input" id="review-exam-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="review-exam-time">وقت الامتحان (اختياري)</label>
+        <input type="time" class="form-input" id="review-exam-time" style="max-width:180px">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block"><span data-icon="plus"></span><span>إضافة للخطة</span></button>
+    </form>
+  </section>
+
+  <section class="card reveal" style="animation-delay:.3s">
+    <div class="card-head">
+      <div class="card-head-left">
+        <span class="card-icon" data-icon="chart"></span>
+        <div>
+          <div class="card-title">كل المواضيع</div>
+          <div class="card-sub">مرتبة حسب المادة</div>
+        </div>
+      </div>
+    </div>
+    <ul class="session-list" id="all-topics-list" style="max-height:420px"></ul>
+  </section>
+
+  <footer class="app-footer reveal" style="animation-delay:.35s">
+    <a href="admin.html" class="btn btn-secondary btn-sm"><span data-icon="book"></span><span>رجوع للوحة التحكم</span></a>
+    <span>إنجاز — خطة مراجعة ثابتة لكل موادك</span>
+    <span style="opacity:.5; font-size:.68rem;" class="num">نسخة الملفات: v1.5</span>
+  </footer>
+
+</div>
+
+<script>
+  // ⚙️ لازم تكون نفس القيمة بالضبط الموجودة بملف admin.html
+  window.INJAZ_FIREBASE_CONFIG = null;
+</script>
+<script type="module" src="js/firebase-bridge.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/review.js"></script>
+</body>
+</html>

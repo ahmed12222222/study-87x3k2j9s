@@ -1,0 +1,194 @@
+/* ============================================================
+   إنجاز — نظام الأنماط (Themes)
+   4 هويات بصرية منفصلة، كل وحدة مبنية على فكرة محسوسة:
+   - ليلي: مصباح دراسة دافئ بغرفة مظلمة (ذهبي + أزرق قمري)
+   - دراسي: لوح طباشير بقاعة صف (أخضر داكن + طباشير ملون)
+   - طبيعي: ضوء نهار صافي (نيلي + مرجاني)
+   - بكيفك: نفس هيكل "طبيعي" لكن قابل للتخصيص بالكامل
+   ============================================================ */
+
+:root{
+  /* -------- مقاييس هندسية مشتركة بين كل الأنماط -------- */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 30px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-display: 'Reem Kufi', 'Tajawal', sans-serif;
+  --font-body: 'Almarai', 'Tajawal', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-in-out: cubic-bezier(.65,0,.35,1);
+  --t-fast: 160ms;
+  --t-med: 340ms;
+  --t-slow: 700ms;
+
+  color-scheme: dark;
+}
+
+/* ================= الوضع الليلي — مصباح المذاكرة ================= */
+[data-theme="night"]{
+  --bg: #0a0d18;
+  --bg-soft: #0d1122;
+  --bg-elevated: #141a2e;
+  --bg-elevated-2: #1a2238;
+  --bg-elevated-3: #232c48;
+  --text: #eef0f8;
+  --text-muted: #96a0c2;
+  --text-faint: #57608a;
+  --primary: #f0b860;
+  --primary-strong: #ffcf85;
+  --primary-ink: #241a04;
+  --secondary: #6f90f7;
+  --secondary-ink: #060a1c;
+  --success: #6fd9a0;
+  --success-ink: #06251a;
+  --warning: #f0b860;
+  --danger: #f2707c;
+  --danger-ink: #2a0508;
+  --border: rgba(238,240,248,.08);
+  --border-strong: rgba(238,240,248,.16);
+  --overlay: rgba(4,6,14,.72);
+  --shadow-color: 228 65% 3%;
+  --card-blur: blur(18px);
+  --scrollbar: #2a3350;
+  --glow-primary: 0 0 42px rgba(240,184,96,.28);
+  --glow-secondary: 0 0 42px rgba(111,144,247,.28);
+  --bg-image:
+    radial-gradient(60% 50% at 18% 8%, rgba(111,144,247,.12), transparent 60%),
+    radial-gradient(50% 45% at 88% 78%, rgba(240,184,96,.10), transparent 60%);
+  color-scheme: dark;
+}
+
+/* ================= الوضع الدراسي — لوح الطباشير ================= */
+[data-theme="study"]{
+  --bg: #1b2a20;
+  --bg-soft: #1e2f23;
+  --bg-elevated: #25392c;
+  --bg-elevated-2: #2c4433;
+  --bg-elevated-3: #35503c;
+  --text: #f2efe1;
+  --text-muted: #b7c2ac;
+  --text-faint: #7c8a76;
+  --primary: #e8d375;
+  --primary-strong: #f2e39a;
+  --primary-ink: #26210a;
+  --secondary: #e8927a;
+  --secondary-ink: #2a1108;
+  --success: #8fd9b6;
+  --success-ink: #08251a;
+  --warning: #e8d375;
+  --danger: #e88a8a;
+  --danger-ink: #280808;
+  --border: rgba(242,239,225,.12);
+  --border-strong: rgba(242,239,225,.22);
+  --overlay: rgba(10,16,11,.72);
+  --shadow-color: 100 30% 4%;
+  --card-blur: blur(6px);
+  --scrollbar: #3d5945;
+  --glow-primary: 0 0 32px rgba(232,211,117,.18);
+  --glow-secondary: 0 0 32px rgba(232,146,122,.18);
+  --bg-image: none;
+  color-scheme: dark;
+}
+
+/* ================= الوضع الطبيعي — ضوء النهار ================= */
+[data-theme="normal"]{
+  --bg: #f6f7fb;
+  --bg-soft: #eef1f7;
+  --bg-elevated: #ffffff;
+  --bg-elevated-2: #eef1f7;
+  --bg-elevated-3: #e2e7f1;
+  --text: #1a2035;
+  --text-muted: #5d6788;
+  --text-faint: #98a1bd;
+  --primary: #3d5af1;
+  --primary-strong: #2a44da;
+  --primary-ink: #ffffff;
+  --secondary: #ff8a4c;
+  --secondary-ink: #2c1000;
+  --success: #1f9d63;
+  --success-ink: #ffffff;
+  --warning: #c9820f;
+  --danger: #e14c5f;
+  --danger-ink: #ffffff;
+  --border: rgba(26,32,53,.09);
+  --border-strong: rgba(26,32,53,.16);
+  --overlay: rgba(20,24,40,.5);
+  --shadow-color: 226 40% 30%;
+  --card-blur: blur(14px);
+  --scrollbar: #ccd2e2;
+  --glow-primary: 0 0 0 rgba(0,0,0,0);
+  --glow-secondary: 0 0 0 rgba(0,0,0,0);
+  --bg-image:
+    radial-gradient(55% 40% at 20% 0%, rgba(61,90,241,.06), transparent 60%),
+    radial-gradient(45% 35% at 100% 100%, rgba(255,138,76,.07), transparent 60%);
+  color-scheme: light;
+}
+
+/* ================= بكيفك — يبدأ من نفس أساس الطبيعي وتتحكم به عبر JS ================= */
+[data-theme="custom"]{
+  --bg: #f6f7fb;
+  --bg-soft: #eef1f7;
+  --bg-elevated: #ffffff;
+  --bg-elevated-2: #eef1f7;
+  --bg-elevated-3: #e2e7f1;
+  --text: #1a2035;
+  --text-muted: #5d6788;
+  --text-faint: #98a1bd;
+  --primary: #7c3aed;
+  --primary-strong: #6423d6;
+  --primary-ink: #ffffff;
+  --secondary: #ff8a4c;
+  --secondary-ink: #2c1000;
+  --success: #1f9d63;
+  --success-ink: #ffffff;
+  --warning: #c9820f;
+  --danger: #e14c5f;
+  --danger-ink: #ffffff;
+  --border: rgba(26,32,53,.09);
+  --border-strong: rgba(26,32,53,.16);
+  --overlay: rgba(20,24,40,.5);
+  --shadow-color: 226 40% 30%;
+  --card-blur: blur(14px);
+  --scrollbar: #ccd2e2;
+  --glow-primary: 0 0 30px color-mix(in srgb, var(--primary) 30%, transparent);
+  --glow-secondary: 0 0 30px color-mix(in srgb, var(--secondary) 30%, transparent);
+  --bg-image:
+    radial-gradient(55% 40% at 20% 0%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(45% 35% at 100% 100%, color-mix(in srgb, var(--secondary) 10%, transparent), transparent 60%);
+}
+[data-theme="custom"][data-custom-mode="dark"]{
+  --bg: #0e0f1a;
+  --bg-soft: #121327;
+  --bg-elevated: #191b30;
+  --bg-elevated-2: #212442;
+  --bg-elevated-3: #2b2f54;
+  --text: #eef0f8;
+  --text-muted: #9aa0c2;
+  --text-faint: #5c6088;
+  --border: rgba(238,240,248,.08);
+  --border-strong: rgba(238,240,248,.16);
+  --shadow-color: 250 60% 3%;
+  color-scheme: dark;
+}
+
+/* انتقال ناعم بين الأنماط */
+body, .card, .btn, .tracker-card, .stat-card, .topbar, .modal, .achieve-card,
+.progress-bar-fill, .session-item, .form-input, .theme-swatch, .toast, .timeline-track{
+  transition: background-color var(--t-med) var(--ease-in-out),
+              color var(--t-med) var(--ease-in-out),
+              border-color var(--t-med) var(--ease-in-out),
+              box-shadow var(--t-med) var(--ease-in-out);
+}

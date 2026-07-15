@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="night">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>إنجاز — لوحة المتابعة</title>
+<meta name="description" content="لوحة متابعة مباشرة لتقدم الدراسة والإنجازات اليومية">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;500;700;800&family=Reem+Kufi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="aurora-bg"><div class="aurora-blob b1"></div><div class="aurora-blob b2"></div><div class="aurora-blob b3"></div></div>
+<div class="chalk-dust"></div>
+
+<div class="app-shell">
+
+  <header class="topbar reveal">
+    <div class="brand">
+      <div class="brand-mark"><span data-icon="book"></span></div>
+      <div class="brand-text">
+        <h1>إنجاز</h1>
+        <div class="role-tag"><span class="role-dot"></span><span>لوحة متابعة — <span id="brand-role-name">المذاكِر المجتهد</span></span></div>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <div class="date-pill">
+        <span id="today-date">—</span>
+        <span class="clock num" id="live-clock">--:--</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="theme-popover-wrap">
+          <button type="button" class="btn-icon" id="theme-popover-btn" onclick="toggleThemePopover()" title="تغيير المظهر لجهازك" aria-label="تغيير المظهر"><span data-icon="palette"></span></button>
+          <div class="theme-popover" id="theme-popover">
+            <button type="button" onclick="setViewerThemeOverride('night')" title="ليلي"><span data-icon="moon"></span></button>
+            <button type="button" onclick="setViewerThemeOverride('study')" title="أجواء دراسية"><span data-icon="chalk"></span></button>
+            <button type="button" onclick="setViewerThemeOverride('normal')" title="طبيعي"><span data-icon="sun"></span></button>
+            <button type="button" class="reset" onclick="clearViewerThemeOverride()" title="رجوع لمظهر صاحب اللوحة"><span data-icon="refresh"></span></button>
+          </div>
+        </div>
+        <button type="button" class="btn-icon" id="refresh-btn" onclick="manualRefresh()" title="تحديث الآن" aria-label="تحديث"><span data-icon="refresh"></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="stale-note" id="stale-note">
+    <span data-icon="alertCircle"></span>
+    <span>هذي آخر نسخة وصلتنا — تعذّر جلب تحديث جديد حالياً.</span>
+  </div>
+
+  <div id="viewer-main">
+    <div class="period-toggle reveal">
+      <button type="button" class="period-btn active" data-period="day" onclick="setPeriod('day')">اليوم</button>
+      <button type="button" class="period-btn" data-period="week" onclick="setPeriod('week')">الأسبوع</button>
+      <button type="button" class="period-btn" data-period="month" onclick="setPeriod('month')">الشهر</button>
+    </div>
+
+    <section class="stats-grid reveal" style="animation-delay:.05s">
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon tint-primary" data-icon="book"></span></div>
+        <span class="stat-value num" id="stat-study">0 د</span>
+        <span class="stat-label">قراءة اليوم</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon tint-secondary" data-icon="coffee"></span></div>
+        <span class="stat-value num" id="stat-break">0 د</span>
+        <span class="stat-label">استراحة اليوم</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon tint-success" data-icon="bed"></span></div>
+        <span class="stat-value num" id="stat-sleep">0 د</span>
+        <span class="stat-label">نوم اليوم</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon tint-success" data-icon="chart"></span></div>
+        <span class="stat-value num" id="stat-percent">0%</span>
+        <span class="stat-label">إنجاز اليوم</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span class="stat-icon tint-warning" data-icon="sparkle"></span></div>
+        <span class="stat-value num" id="stat-points">0</span>
+        <span class="stat-label">نقاط اليوم</span>
+      </div>
+    </section>
+
+    <section class="card timeline-card reveal" style="animation-delay:.1s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon" data-icon="clock"></span>
+          <div>
+            <div class="card-title">خط اليوم</div>
+            <div class="card-sub" id="timeline-sub">شكل اليوم بلمحة وحدة — من 12 بالليل ل12 بالليل</div>
+          </div>
+        </div>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="legend-dot study"></span> قراءة</span>
+          <span class="legend-item"><span class="legend-dot brk"></span> استراحة</span>
+          <span class="legend-item"><span class="legend-dot sleep"></span> نوم</span>
+        </div>
+      </div>
+      <div class="timeline-track" id="timeline-track"></div>
+      <div class="week-bars" id="week-bars" style="display:none"></div>
+      <div class="month-grid-wrap" id="month-grid-wrap" style="display:none"></div>
+
+      <div class="progress-side" style="margin-top:18px">
+        <div class="progress-title-row"><span class="card-sub" id="goal-label">هدف اليوم</span></div>
+        <div class="progress-bar-track" style="height:10px">
+          <div class="progress-bar-fill" id="goal-fill" style="background:linear-gradient(90deg, var(--secondary), var(--primary))"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tracker-grid">
+      <div class="card tracker-card reveal" data-cat="study" style="animation-delay:.15s">
+        <div class="card-head">
+          <div class="card-head-left">
+            <span class="card-icon" data-icon="book"></span>
+            <div>
+              <div class="card-title">دراستي</div>
+              <div class="card-sub tracker-total" id="total-study">0 د اليوم</div>
+            </div>
+          </div>
+        </div>
+        <div class="viewer-live-timer" id="livetimer-study" style="display:none">
+          <span class="live-dot"></span><span>يقرأ الآن</span><span class="num live-clock" id="livetimer-study-clock">00:00:00</span>
+        </div>
+        <ul class="session-list" id="sessionlist-study" style="max-height:320px"></ul>
+      </div>
+
+      <div class="card tracker-card reveal" data-cat="break" style="animation-delay:.2s">
+        <div class="card-head">
+          <div class="card-head-left">
+            <span class="card-icon" data-icon="coffee"></span>
+            <div>
+              <div class="card-title">استراحاتي</div>
+              <div class="card-sub tracker-total" id="total-break">0 د اليوم</div>
+            </div>
+          </div>
+        </div>
+        <div class="viewer-live-timer" id="livetimer-break" style="display:none">
+          <span class="live-dot"></span><span>يستريح الآن</span><span class="num live-clock" id="livetimer-break-clock">00:00:00</span>
+        </div>
+        <ul class="session-list" id="sessionlist-break" style="max-height:320px"></ul>
+      </div>
+
+      <div class="card tracker-card reveal" data-cat="sleep" style="animation-delay:.25s">
+        <div class="card-head">
+          <div class="card-head-left">
+            <span class="card-icon" data-icon="bed"></span>
+            <div>
+              <div class="card-title">نومي</div>
+              <div class="card-sub tracker-total" id="total-sleep">0 د اليوم</div>
+            </div>
+          </div>
+        </div>
+        <div class="viewer-live-timer" id="livetimer-sleep" style="display:none">
+          <span class="live-dot"></span><span>ينام الآن</span><span class="num live-clock" id="livetimer-sleep-clock">00:00:00</span>
+        </div>
+        <ul class="session-list" id="sessionlist-sleep" style="max-height:320px"></ul>
+      </div>
+    </section>
+
+    <section class="card reveal" style="animation-delay:.25s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon" data-icon="trophy"></span>
+          <div>
+            <div class="card-title">إنجازات اليوم</div>
+            <div class="card-sub">أهداف اليوم ونسبة الإنجاز والنقاط</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="achieve-list" id="achieve-list"></ul>
+
+      <div class="progress-wrap">
+        <div class="progress-side">
+          <div class="progress-title-row">
+            <span class="card-sub">نسبة الإنجاز</span>
+            <span class="progress-percent-num num" id="progress-percent-num">0%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+          <span class="progress-hint" id="progress-hint">—</span>
+        </div>
+        <div class="points-orb">
+          <span class="val num" id="points-value">0</span>
+          <span class="lbl">نقطة</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card reveal" style="animation-delay:.3s">
+      <div class="card-head">
+        <div class="card-head-left">
+          <span class="card-icon tint-warning" data-icon="star"></span>
+          <div>
+            <div class="card-title">شاركونا رأيكم</div>
+            <div class="card-sub">اختياري بالكامل — تقييم وكلمة تشجيع إذا حابين</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rating-stars" id="rating-stars"></div>
+
+      <div class="form-group" style="margin-top:14px">
+        <input type="text" class="form-input" id="rating-name" placeholder="اسمك (اختياري)" maxlength="30">
+      </div>
+      <div class="form-group">
+        <textarea class="form-textarea" id="rating-comment" placeholder="اكتب كلمة تشجيع أو ملاحظة... (اختياري)" style="min-height:70px"></textarea>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" onclick="shareViaWhatsapp()"><span data-icon="whatsapp"></span><span>إرسال عبر واتساب</span></button>
+        <button type="button" class="btn btn-secondary" onclick="copyFeedback()"><span data-icon="copy"></span><span>نسخ الرسالة</span></button>
+      </div>
+      <div class="rating-sent-note">ما ينحفظ أو ينرسل شي أوتوماتيكياً — بس إذا تضغطون إرسال أو نسخ بأنفسكم.</div>
+    </section>
+
+    <footer class="app-footer reveal" style="animation-delay:.35s">
+      <span class="viewer-badge"><span data-icon="eye"></span> لوحة مشاهدة مباشرة — تحدّث كل شوي أوتوماتيكياً</span>
+      <span id="last-updated">—</span>
+      <span style="opacity:.5; font-size:.68rem;" class="num">نسخة الملفات: v1.5</span>
+    </footer>
+  </div>
+
+  <div class="viewer-state" id="viewer-state">
+    <span data-icon="database"></span>
+    <p id="viewer-state-text">جاري تحميل البيانات...</p>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="manualRefresh()"><span data-icon="refresh"></span><span>حاول مرة ثانية</span></button>
+  </div>
+
+</div>
+
+<!-- لوحة عرض الملاحظة -->
+<div class="modal-overlay" id="modal-note" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="modal-title" id="modal-note-title">تفاصيل الجلسة</h3>
+      <button type="button" class="icon-btn" onclick="closeModal('modal-note')" aria-label="إغلاق"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta"><span data-icon="clock"></span><span id="modal-note-meta">—</span></div>
+      <div class="note-view" id="modal-note-text"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('modal-note')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- لوحة تفاصيل يوم كامل (من الأسبوع/الشهر) -->
+<div class="modal-overlay" id="modal-day" role="dialog" aria-modal="true">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h3 class="modal-title" id="modal-day-title">تفاصيل اليوم</h3>
+      <button type="button" class="icon-btn" onclick="closeDayModal()" aria-label="إغلاق"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body" id="modal-day-body"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" onclick="closeDayModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ⚙️ إعداد Firebase — لازم يكون نفس القيمة بالضبط الموجودة بملف admin.html (خطوات كاملة بالـ README).
+  window.INJAZ_FIREBASE_CONFIG = null;
+  /* مثال:
+  window.INJAZ_FIREBASE_CONFIG = {
+    apiKey: "AIzaSy...",
+    authDomain: "my-project.firebaseapp.com",
+    databaseURL: "https://my-project-default-rtdb.firebaseio.com",
+    projectId: "my-project",
+    storageBucket: "my-project.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef"
+  };
+  */
+</script>
+<script type="module" src="js/firebase-bridge.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/viewer.js"></script>
+</body>
+</html>
